@@ -64,7 +64,17 @@ export default function App() {
 
       <Main>
 
-        <Box>
+        <Box element={<MovieList movies={movies} />} />
+
+        <Box element={
+          <>
+            <WatchedSummary watched={watched} />
+
+            <WatchedList watched={watched} />
+          </>
+        } />
+
+        {/* <Box>
           <MovieList movies={movies} />
         </Box>
 
@@ -74,7 +84,7 @@ export default function App() {
 
           <WatchedList watched={watched} />
           
-        </Box>
+        </Box> */}
 
       </Main>
     </>
@@ -145,7 +155,7 @@ const WatchedSummary = ({ watched }) => {
   );
 };
 
-const Box = ({children}) => {
+const Box = ({element}) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -156,7 +166,7 @@ const Box = ({children}) => {
       >
         {isOpen ? "–" : "+"}
       </button>
-      {isOpen && children}
+      {isOpen && element}
     </div>
   );
 };
