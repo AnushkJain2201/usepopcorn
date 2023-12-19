@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+// First we have to import the PropTypes from the prop-types
+import PropTypes from 'prop-types';
+
 const containerStyle = {
   display: "flex",
   alignItems: "center",
@@ -10,6 +13,7 @@ const starContainerStyle = {
   display: "flex",
 };
 
+// Here, we are using the PropTypes for the type safety Although we imported with a capital P in PropTypes but we have to use lower case here.
 
 
 // Destructuring props with a default value
@@ -40,6 +44,18 @@ const StarRating = ({ maxRating = 5, color = '#fcc419', size = 48, className = '
     </div>
   );
 };
+
+StarRating.propTypes = {
+  // Here inside we have to use the PropTypes that we imported
+  // The isRequired that we added here, simply make the prop mandatory
+  maxRating: PropTypes.number.isRequired,
+  defaultRating: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.number,
+  messages: PropTypes.array,
+  className: PropTypes.string,
+  onSetRating: PropTypes.func
+}
 
 export default StarRating;
 
