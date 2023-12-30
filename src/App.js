@@ -54,13 +54,32 @@ const KEY = 'af22b349';
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const query = 'interstellar'
+
+  const [isLoading, setIsLoading] = useState(false);
+
 
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`).then(res => res.json()).then(data => console.log(data));
 
+  // useEffect(() => {
+  //   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
+  //   .then(res => res.json())
+  //   .then(data => setMovies(data.Search))
+  // }, [])
+
+  // async and await to do the same thing
   useEffect(() => {
-    fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
-    .then(res => res.json())
-    .then(data => setMovies(data.Search))
+    async function fetchMovies() {
+      setIsLoading(true);
+
+      const response = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
+      const result = await response.json();
+
+      setMovies(result.Search);
+      setIsLoading(false);
+    }
+
+    fetchMovies();
   }, [])
  
   return (
@@ -73,7 +92,7 @@ export default function App() {
 
       <Main>
 
-        <Box element={<MovieList movies={movies} />} />
+        {/* <Box element={isLoading ? <Loader /> : <MovieList movies={movies} />} />
 
         <Box element={
           <>
@@ -81,10 +100,10 @@ export default function App() {
 
             <WatchedList watched={watched} />
           </>
-        } />
+        } /> */}
 
-        {/* <Box>
-          <MovieList movies={movies} />
+        <Box>
+          {isLoading ? <Loader /> : <MovieList movies={movies} />}
         </Box>
 
         <Box>
@@ -93,10 +112,16 @@ export default function App() {
 
           <WatchedList watched={watched} />
           
-        </Box> */}
+        </Box>
 
       </Main>
     </>
+  );
+}
+
+const Loader = () => {
+  return(
+    <p className="loader">Loading...</p>
   );
 }
 
@@ -164,7 +189,7 @@ const WatchedSummary = ({ watched }) => {
   );
 };
 
-const Box = ({element}) => {
+const Box = ({children}) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -175,7 +200,7 @@ const Box = ({element}) => {
       >
         {isOpen ? "–" : "+"}
       </button>
-      {isOpen && element}
+      {isOpen && children}
     </div>
   );
 };
