@@ -51,12 +51,22 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const KEY = 'af22b349';
+
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+
+  const handleSelectMovie =(id) => {
+    setSelectedId((currId) => id === currId ? null : id);
+  }
+
+  const handleCloseMovie = () => {
+    setSelectedId(null);
+  }
 
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`).then(res => res.json()).then(data => console.log(data));
 
@@ -129,21 +139,38 @@ export default function App() {
 
           {isLoading && <Loader />}
 
-          {!isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && <MovieList movies={movies} handleSelectMovie={handleSelectMovie} />}
 
           {error && <ErrorMessage message={error} />}
         </Box>
 
         <Box>
           
-          <WatchedSummary watched={watched} />
+          {
+            selectedId ? <MovieDetails selectedId={selectedId} onCloseMovie={handleCloseMovie} /> :
+            <>
+              <WatchedSummary watched={watched} />
 
-          <WatchedList watched={watched} />
+              <WatchedList watched={watched} />
+            </>
+          }
           
         </Box>
 
       </Main>
     </>
+  );
+}
+
+const MovieDetails = ({selectedId, onCloseMovie}) => {
+  return (
+    <div className="detail">
+      <button className="btn-back" onClick={onCloseMovie}>
+        &larr;
+      </button>
+
+      {selectedId}
+    </div>
   );
 }
 
@@ -265,19 +292,19 @@ const Watched = () => {
 };
 */
 
-const MovieList = ({ movies }) => {
+const MovieList = ({ movies, handleSelectMovie }) => {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
+        <Movie movie={movie} key={movie.imdbID} handleSelectMovie={handleSelectMovie} />
       ))}
     </ul>
   );
 };
 
-const Movie = ({ movie }) => {
+const Movie = ({ movie, handleSelectMovie }) => {
   return (
-    <li>
+    <li onClick={() => handleSelectMovie(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
