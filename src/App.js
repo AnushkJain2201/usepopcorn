@@ -58,7 +58,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [query, setQuery] = useState("inception");
+  const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
   const handleSelectMovie =(id) => {
@@ -87,12 +87,15 @@ export default function App() {
 
   // async and await to do the same thing
   useEffect(() => {
+
+    const controller = new AbortController();
+
     async function fetchMovies() {
       try{
         setIsLoading(true);
         setError("");
 
-        const response = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
+        const response = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`, {signal: controller.signal});
 
         if(!response.ok) throw new Error("Something went wrong with fetching movies");
 
@@ -105,8 +108,10 @@ export default function App() {
         setMovies(result.Search);
         
       } catch(err) {
-        console.error(err.message);
-        setError(err.message);
+        console.log(err.message);
+        if(err.name !== "AbortError") {
+          setError(err.message);
+        }
 
       } finally {
         setIsLoading(false);
@@ -120,7 +125,13 @@ export default function App() {
       return;
     }
 
+    handleCloseMovie();
+
     fetchMovies();
+
+    return () => {
+      controller.abort();
+    }
   }, [query])
  
   return (
@@ -197,6 +208,8 @@ const MovieDetails = ({selectedId, onCloseMovie, onAddWatched, watched}) => {
   }
  
   useEffect(() => {
+    
+
     const getMovieDetails = async() => {
 			setIsLoading(true);
 
@@ -210,6 +223,18 @@ const MovieDetails = ({selectedId, onCloseMovie, onAddWatched, watched}) => {
 
 		getMovieDetails();
   }, [selectedId]);
+
+  useEffect(() => {
+    const escapeMovieDetail = document.addEventListener('keydown', (e) => {
+      if(e.code === 'Escape') {
+        onCloseMovie();
+      }
+    });
+
+    return () => {
+      document.removeEventListener('keydown', escapeMovieDetail);
+    }
+  }, [onCloseMovie]);
 
   useEffect(() => {
     if(!title) return;
