@@ -56,9 +56,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  
-  const query = 'interstellar';
-
+  const [query, setQuery] = useState("");
 
   // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`).then(res => res.json()).then(data => console.log(data));
 
@@ -66,13 +64,14 @@ export default function App() {
   //   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
   //   .then(res => res.json())
   //   .then(data => setMovies(data.Search))
-  // }, [])
+  // }, [])  
 
   // async and await to do the same thing
   useEffect(() => {
     async function fetchMovies() {
       try{
         setIsLoading(true);
+        setError("");
 
         const response = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
 
@@ -95,14 +94,21 @@ export default function App() {
       }
     }
 
+    // If the query that we search in the search box is less than 3 charachters we will not make the fetch request
+    if(query.length < 3) {
+      setMovies([]);
+      setError('');
+      return;
+    }
+
     fetchMovies();
-  }, [])
+  }, [query])
  
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
 
@@ -301,8 +307,7 @@ const Logo = () => {
   );
 };
 
-const Search = () => {
-  const [query, setQuery] = useState("");
+const Search = ({query, setQuery}) => {
 
   return (
     <input
