@@ -55,11 +55,18 @@ const KEY = 'af22b349';
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(() => {
+    const storedValue = localStorage.getItem('watched');
+
+    return JSON.parse(storedValue);
+  });
+
 
   const handleSelectMovie =(id) => {
     setSelectedId((currId) => id === currId ? null : id);
@@ -71,6 +78,8 @@ export default function App() {
 
   const handleAddWatched = (movie) => {
     setWatched((currWatched) => [...watched, movie]);
+
+    // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
   }
 
   const handleDeleteWatched = (id) => {
@@ -133,6 +142,11 @@ export default function App() {
       controller.abort();
     }
   }, [query])
+
+  // useEffect to save the new watched list in the localstorage everytime the watched state is updated
+  useEffect(() => {
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
  
   return (
     <>
