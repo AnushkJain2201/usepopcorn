@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
+import { useMovies } from "./useMovies";
 
 // const tempMovieData = [
 //   {
@@ -54,11 +55,18 @@ const average = (arr) =>
 const KEY = 'af22b349';
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  // const [movies, setMovies] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+
+
+  const handleCloseMovie = () => {
+    setSelectedId(null);
+  }
+
+  const {movies, isLoading, error}  = useMovies(query);
   
   // const [watched, setWatched] = useState([]);
   const [watched, setWatched] = useState(() => {
@@ -72,9 +80,7 @@ export default function App() {
     setSelectedId((currId) => id === currId ? null : id);
   }
 
-  const handleCloseMovie = () => {
-    setSelectedId(null);
-  }
+  
 
   const handleAddWatched = (movie) => {
     setWatched((currWatched) => [...watched, movie]);
@@ -95,53 +101,53 @@ export default function App() {
   // }, [])  
 
   // async and await to do the same thing
-  useEffect(() => {
+  // useEffect(() => {
 
-    const controller = new AbortController();
+  //   const controller = new AbortController();
 
-    async function fetchMovies() {
-      try{
-        setIsLoading(true);
-        setError("");
+  //   async function fetchMovies() {
+  //     try{
+  //       setIsLoading(true);
+  //       setError("");
 
-        const response = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`, {signal: controller.signal});
+  //       const response = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`, {signal: controller.signal});
 
-        if(!response.ok) throw new Error("Something went wrong with fetching movies");
+  //       if(!response.ok) throw new Error("Something went wrong with fetching movies");
 
         
 
-        const result = await response.json();
+  //       const result = await response.json();
 
-        if(result.Response === 'False') throw new Error("Movie Not Found");
+  //       if(result.Response === 'False') throw new Error("Movie Not Found");
 
-        setMovies(result.Search);
+  //       setMovies(result.Search);
         
-      } catch(err) {
-        console.log(err.message);
-        if(err.name !== "AbortError") {
-          setError(err.message);
-        }
+  //     } catch(err) {
+  //       console.log(err.message);
+  //       if(err.name !== "AbortError") {
+  //         setError(err.message);
+  //       }
 
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
 
-    // If the query that we search in the search box is less than 3 charachters we will not make the fetch request
-    if(query.length < 3) {
-      setMovies([]);
-      setError('');
-      return;
-    }
+  //   // If the query that we search in the search box is less than 3 charachters we will not make the fetch request
+  //   if(query.length < 3) {
+  //     setMovies([]);
+  //     setError('');
+  //     return;
+  //   }
 
-    handleCloseMovie();
+  //   handleCloseMovie();
 
-    fetchMovies();
+  //   fetchMovies();
 
-    return () => {
-      controller.abort();
-    }
-  }, [query])
+  //   return () => {
+  //     controller.abort();
+  //   }
+  // }, [query])
 
   // useEffect to save the new watched list in the localstorage everytime the watched state is updated
   useEffect(() => {
