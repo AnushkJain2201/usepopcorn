@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
 import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 // const tempMovieData = [
 //   {
@@ -255,17 +256,19 @@ const MovieDetails = ({selectedId, onCloseMovie, onAddWatched, watched}) => {
 		getMovieDetails();
   }, [selectedId]);
 
-  useEffect(() => {
-    const escapeMovieDetail = document.addEventListener('keydown', (e) => {
-      if(e.code === 'Escape') {
-        onCloseMovie();
-      }
-    });
+  useKey('Escape', onCloseMovie);
 
-    return () => {
-      document.removeEventListener('keydown', escapeMovieDetail);
-    }
-  }, [onCloseMovie]);
+  // useEffect(() => {
+  //   const escapeMovieDetail = document.addEventListener('keydown', (e) => {
+  //     if(e.code === 'Escape') {
+  //       onCloseMovie();
+  //     }
+  //   });
+
+  //   return () => {
+  //     document.removeEventListener('keydown', escapeMovieDetail);
+  //   }
+  // }, [onCloseMovie]);
 
   useEffect(() => {
     if(!title) return;
@@ -488,21 +491,28 @@ const Logo = () => {
 const Search = ({query, setQuery}) => {
   const inputEl = useRef(null);
 
+  useKey('Enter', () => {
+    if(document.activeElement === inputEl.current) return;
+
+    inputEl.current.focus();
+    setQuery('');
+  })
+
   // Search field will be focused after pressing the Enter key
-  useEffect(() => {
-    const callback = (e) => {
-      if(document.activeElement === inputEl.current) return; 
-      if(e.code === "Enter") {
-        inputEl.current.focus();
+  // useEffect(() => {
+  //   const callback = (e) => {
+  //     if(document.activeElement === inputEl.current) return; 
+  //     if(e.code === "Enter") {
+  //       inputEl.current.focus();
 
-        setQuery('');
-      }
-    }
+  //       setQuery('');
+  //     }
+  //   }
 
-    document.addEventListener('keydown', callback);
+  //   document.addEventListener('keydown', callback);
 
-    return () => document.addEventListener('keydown', callback);
-  }, [setQuery])
+  //   return () => document.addEventListener('keydown', callback);
+  // }, [setQuery])
 
   return (
     <input
