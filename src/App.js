@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
 
 // const tempMovieData = [
 //   {
@@ -67,13 +68,15 @@ export default function App() {
   }
 
   const {movies, isLoading, error}  = useMovies(query);
+
+  const [watched, setWatched] = useLocalStorageState([], "watched");
   
   // const [watched, setWatched] = useState([]);
-  const [watched, setWatched] = useState(() => {
-    const storedValue = localStorage.getItem('watched');
+  // const [watched, setWatched] = useState(() => {
+  //   const storedValue = localStorage.getItem('watched');
 
-    return JSON.parse(storedValue);
-  });
+  //   return JSON.parse(storedValue);
+  // });
 
 
   const handleSelectMovie =(id) => {
@@ -150,9 +153,9 @@ export default function App() {
   // }, [query])
 
   // useEffect to save the new watched list in the localstorage everytime the watched state is updated
-  useEffect(() => {
-    localStorage.setItem("watched", JSON.stringify(watched));
-  }, [watched]);
+  // useEffect(() => {
+  //   localStorage.setItem("watched", JSON.stringify(watched));
+  // }, [watched]);
  
   return (
     <>
